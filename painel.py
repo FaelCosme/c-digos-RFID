@@ -1,9 +1,8 @@
-import kivy
+ import kivy
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.core.window import Window
 import subprocess
-import shlex
 import os
 
 # Define uma cor de fundo (opcional)
@@ -47,45 +46,53 @@ class LoginScreen(Screen):
         self.ids.pass_input.text = ""
 
 
+# Define o comando padrão para o script de gravação
 DEFAULT_COMMAND = os.path.join(os.path.dirname(__file__), 'codigoParaInicar.py')
 
 
 class MainScreen(Screen):
     """Tela principal que aparece após login bem-sucedido."""
 
-    def run_command(self):
-        """Inicia o comando especificado no campo de texto em background.
-
-        Se o campo estiver vazio executa `codigoParaInicar.py` por padrão.
-        Usa shell=True para permitir comandos compostos (pipes/redirecionamentos).
+    def start_audio_recording(self):
+        """Inicia o script 'codigoParaInicar.py' em background.
+        Esta função é chamada diretamente pelo botão 'Gravar Áudio'.
         """
-        # obtém o comando do campo de texto (se presente)
-        cmd_text = ''
-        try:
-            if 'command_input' in self.ids:
-                cmd_text = self.ids.command_input.text.strip()
-        except Exception:
-            cmd_text = ''
-
-        if not cmd_text:
-            cmd_text = f'python "{DEFAULT_COMMAND}"'
+        
+        # O comando agora é fixo, não vem mais do input
+        cmd_text = f'python "{DEFAULT_COMMAND}"'
 
         try:
+            # Inicia o processo
             subprocess.Popen(cmd_text, shell=True)
+            
+            # Atualiza o label de feedback
             if 'main_feedback' in self.ids:
-                self.ids.main_feedback.text = f'Comando iniciado.'
+                self.ids.main_feedback.text = f'Gravação de áudio iniciada...'
+                self.ids.main_feedback.color = (0, 1, 0, 1) # Verde
         except Exception as e:
             if 'main_feedback' in self.ids:
-                self.ids.main_feedback.text = f'Erro ao iniciar: {e}'
+                self.ids.main_feedback.text = f'Erro ao iniciar gravação: {e}'
+                self.ids.main_feedback.color = (1, 0, 0, 1) # Vermelho
             else:
                 print(f'Erro ao iniciar comando: {e}')
+
+    def do_logout(self):
+        """Retorna para a tela de login."""
+        if self.manager:
+            # Limpa o feedback da tela principal ao sair
+            if 'main_feedback' in self.ids:
+                self.ids.main_feedback.text = ""
+            self.manager.current = 'login'
 
 
 class PainelApp(App):
     """App principal. Cria um ScreenManager com as telas de login e
-    tela principal."""
+    tela principal. O Kivy irá carregar automaticamente o arquivo 'painel.kv'
+    """
 
     def build(self):
+        # O ScreenManager agora é gerenciado pelo arquivo .kv
+        # Mas manteremos a lógica original para consistência
         sm = ScreenManager()
         sm.add_widget(LoginScreen(name='login'))
         sm.add_widget(MainScreen(name='main'))
