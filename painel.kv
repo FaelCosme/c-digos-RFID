@@ -1,114 +1,227 @@
 #:kivy 2.0.0
 
-ScreenManager:
-    LoginScreen:
-        name: 'login'
-    MainScreen:
-        name: 'main'
+# Define um estilo base para os botões
+<BotaoBase@Button>:
+    font_size: '18sp'
+    size_hint_y: None
+    height: '48dp'
+    background_color: (0.2, 0.6, 0.8, 1)
+    background_normal: '' # Necessário para a cor funcionar
 
+# Define um estilo base para os inputs
+<InputBase@TextInput>:
+    font_size: '18sp'
+    size_hint_y: None
+    height: '48dp'
+    multiline: False
 
+# --- Tela de Login ---
 <LoginScreen>:
-    orientation: 'vertical'
-    padding: [50, 20]
-    spacing: 20
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [40, 40]
+        spacing: 15
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        size_hint: (None, None)
+        width: 400
+        height: 400
+        # Fundo do "card" de login
+        canvas.before:
+            Color:
+                rgba: (0.2, 0.2, 0.2, 1)
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [10]
 
-    Label:
-        text: 'Plataforma de Login (com .kv)'
-        font_size: '24sp'
-        bold: True
-        size_hint_y: None
-        height: 50
-
-    GridLayout:
-        cols: 2
-        spacing: 10
-        size_hint_y: None
-        height: 80
+        Label:
+            text: 'Acesso ao Painel'
+            font_size: '24sp'
+            size_hint_y: None
+            height: '50dp'
 
         Label:
             text: 'Usuário:'
-            font_size: '18sp'
+            halign: 'left'
+            text_size: self.size
+            size_hint_y: None
+            height: '20dp'
 
-        TextInput:
+        InputBase:
             id: user_input
-            multiline: False
-            font_size: '18sp'
-            hint_text: 'Digite seu usuário'
 
         Label:
             text: 'Senha:'
-            font_size: '18sp'
+            halign: 'left'
+            text_size: self.size
+            size_hint_y: None
+            height: '20dp'
 
-        TextInput:
+        InputBase:
             id: pass_input
-            multiline: False
             password: True
-            font_size: '18sp'
-            hint_text: 'Digite sua senha'
 
-    Button:
-        text: 'Entrar'
-        font_size: '20sp'
-        size_hint_y: None
-        height: 50
-        on_press: root.verificar_login()
+        BotaoBase:
+            id: login_button
+            text: 'Entrar'
+            on_press: root.verificar_login()
 
-    Label:
-        id: feedback
-        text: ''
-        font_size: '16sp'
-        color: (1, 0, 0, 1)
+        Label:
+            id: feedback
+            text: ''
+            size_hint_y: None
+            height: '40dp'
 
-
+# --- Tela Principal ---
 <MainScreen>:
     BoxLayout:
         orientation: 'vertical'
-        padding: [20]
-        spacing: 10
+        padding: 40
+        spacing: 20
 
         Label:
-            text: 'Tela Principal'
-            font_size: '24sp'
-            size_hint_y: None
-            height: 50
-
-        Label:
-            text: 'Você está logado.'
-            font_size: '18sp'
+            text: 'Painel Principal'
+            font_size: '32sp'
+            size_hint_y: 0.2
 
         BoxLayout:
             orientation: 'vertical'
-            size_hint_y: None
-            height: 120
-            spacing: 8
+            spacing: 15
+            size_hint_y: 0.6
+            pos_hint: {'center_y': 0.5}
+
+            # Este é o novo botão que substitui o campo de texto
+            BotaoBase:
+                id: record_button
+                text: 'Gravar Áudio'
+                font_size: '22sp'
+                height: '60dp'
+                background_color: (0.8, 0.2, 0.2, 1) # Cor de "gravação"
+                on_press: root.start_audio_recording()
 
             Label:
-                text: 'Comando a executar (se vazio executa codigoParaInicar.py)'
-                size_hint_y: None
-                height: 24
+                id: main_feedback
+                text: 'Pressione o botão para iniciar a gravação.'
+                font_size: '16sp'
+                color: (0.7, 0.7, 0.7, 1)
 
-            TextInput:
-                id: command_input
-                multiline: False
-                hint_text: 'Ex: python meu_script.py --arg valor'
+        # Botão de Logout adicionado
+        BotaoBase:
+            text: 'Sair (Logout)'
+            size_hint_y: 0.1
+            pos_hint: {'bottom': 1}
+            background_color: (0.5, 0.5, 0.5, 1)
+            on_press: root.do_logout()#:kivy 2.0.0
 
-            BoxLayout:
-                size_hint_y: None
-                height: 40
-                spacing: 10
+# Define um estilo base para os botões
+<BotaoBase@Button>:
+    font_size: '18sp'
+    size_hint_y: None
+    height: '48dp'
+    background_color: (0.2, 0.6, 0.8, 1)
+    background_normal: '' # Necessário para a cor funcionar
 
-                Button:
-                    text: 'Executar Comando'
-                    on_press: root.run_command()
+# Define um estilo base para os inputs
+<InputBase@TextInput>:
+    font_size: '18sp'
+    size_hint_y: None
+    height: '48dp'
+    multiline: False
 
-                Button:
-                    text: 'Logout'
-                    size_hint_x: None
-                    width: 120
-                    on_press: app.root.current = 'login'
+# --- Tela de Login ---
+<LoginScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [40, 40]
+        spacing: 15
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        size_hint: (None, None)
+        width: 400
+        height: 400
+        # Fundo do "card" de login
+        canvas.before:
+            Color:
+                rgba: (0.2, 0.2, 0.2, 1)
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [10]
 
         Label:
-            id: main_feedback
+            text: 'Acesso ao Painel'
+            font_size: '24sp'
+            size_hint_y: None
+            height: '50dp'
+
+        Label:
+            text: 'Usuário:'
+            halign: 'left'
+            text_size: self.size
+            size_hint_y: None
+            height: '20dp'
+
+        InputBase:
+            id: user_input
+
+        Label:
+            text: 'Senha:'
+            halign: 'left'
+            text_size: self.size
+            size_hint_y: None
+            height: '20dp'
+
+        InputBase:
+            id: pass_input
+            password: True
+
+        BotaoBase:
+            id: login_button
+            text: 'Entrar'
+            on_press: root.verificar_login()
+
+        Label:
+            id: feedback
             text: ''
             size_hint_y: None
-            height: 30
+            height: '40dp'
+
+# --- Tela Principal ---
+<MainScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 40
+        spacing: 20
+
+        Label:
+            text: 'Painel Principal'
+            font_size: '32sp'
+            size_hint_y: 0.2
+
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 15
+            size_hint_y: 0.6
+            pos_hint: {'center_y': 0.5}
+
+            # Este é o novo botão que substitui o campo de texto
+            BotaoBase:
+                id: record_button
+                text: 'Gravar Áudio'
+                font_size: '22sp'
+                height: '60dp'
+                background_color: (0.8, 0.2, 0.2, 1) # Cor de "gravação"
+                on_press: root.start_audio_recording()
+
+            Label:
+                id: main_feedback
+                text: 'Pressione o botão para iniciar a gravação.'
+                font_size: '16sp'
+                color: (0.7, 0.7, 0.7, 1)
+
+        # Botão de Logout adicionado
+        BotaoBase:
+            text: 'Sair (Logout)'
+            size_hint_y: 0.1
+            pos_hint: {'bottom': 1}
+            background_color: (0.5, 0.5, 0.5, 1)
+            on_press: root.do_logout()
